@@ -67,6 +67,8 @@ public class SimpleCalendarHeaderView extends View {
         mCalendar = Calendar.getInstance();
         mDayLabelCalendar = Calendar.getInstance();
 
+        mCalendar.setFirstDayOfWeek(Calendar.MONDAY);
+
         Resources resources = context.getResources();
 
         mWeekStart = mCalendar.getFirstDayOfWeek();
