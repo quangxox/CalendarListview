@@ -112,6 +112,8 @@ You can reach me at [+RobinChutaux](https://plus.google.com/+RobinChutaux) or fo
 
 Thanks to [Flavien Laurent](https://github.com/flavienlaurent) for his [DateTimePicker](https://github.com/flavienlaurent/datetimepicker).
 
+Thanks to traex and SimoneBellotti.
+
 ### MIT License
 
 ```
