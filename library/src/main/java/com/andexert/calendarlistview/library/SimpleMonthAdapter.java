@@ -55,6 +55,7 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     public SimpleMonthAdapter(Context context, DatePickerController datePickerController, TypedArray typedArray) {
         this.typedArray = typedArray;
         calendar = Calendar.getInstance();
+        calendar.setFirstDayOfWeek(Calendar.MONDAY);
         firstMonth = typedArray.getInt(R.styleable.DayPickerView_firstMonth, calendar.get(Calendar.MONTH));
         lastMonth = typedArray.getInt(R.styleable.DayPickerView_lastMonth, (calendar.get(Calendar.MONTH) - 1) % MONTHS_IN_YEAR);
         enableRangeDaySelect = typedArray.getBoolean(R.styleable.DayPickerView_enableRangeDaySelect, true);
