@@ -39,6 +39,7 @@ import android.view.View;
 
 import java.security.InvalidParameterException;
 import java.text.DateFormatSymbols;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
@@ -66,6 +67,8 @@ class SimpleMonthView extends View {
     protected static int MONTH_DAY_LABEL_TEXT_SIZE;
     protected static int MONTH_HEADER_SIZE;
     protected static int MONTH_LABEL_TEXT_SIZE;
+    protected static int EVENT_ROW_SIZE;
+    protected static int EVENT_CIRCLE_RADIUS;
     protected static boolean ENABLE_MONTH_DAY_HEADER;
 
     protected int mPadding = 0;
@@ -78,6 +81,7 @@ class SimpleMonthView extends View {
     protected Paint mMonthTitleBGPaint;
     protected Paint mMonthTitlePaint;
     protected Paint mSelectedCirclePaint;
+    protected Paint mEventDotPaint;
     protected int mCurrentDayTextColor;
     protected int mMonthTextColor;
     protected int mDayTextColor;
@@ -85,6 +89,7 @@ class SimpleMonthView extends View {
     protected int mMonthTitleBGColor;
     protected int mPreviousDayColor;
     protected int mSelectedDaysColor;
+    protected int mEventColor;
 
     private final StringBuilder mStringBuilder;
 
@@ -112,6 +117,8 @@ class SimpleMonthView extends View {
     private final Calendar mDayLabelCalendar;
     private final Boolean isPrevDayEnabled;
 
+    private EventData[] eventDatas;
+
     private int mNumRows = DEFAULT_NUM_ROWS;
 
     private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
@@ -135,6 +142,7 @@ class SimpleMonthView extends View {
         mPreviousDayColor = typedArray.getColor(R.styleable.DayPickerView_colorPreviousDay, resources.getColor(R.color.normal_day));
         mSelectedDaysColor = typedArray.getColor(R.styleable.DayPickerView_colorSelectedDayBackground, resources.getColor(R.color.selected_day_background));
         mMonthTitleBGColor = typedArray.getColor(R.styleable.DayPickerView_colorSelectedDayText, resources.getColor(R.color.selected_day_text));
+        mEventColor = typedArray.getColor(R.styleable.DayPickerView_colorEvent, resources.getColor(R.color.event_dot));
 
         mDrawRect = typedArray.getBoolean(R.styleable.DayPickerView_drawRoundRect, false);
 
@@ -145,15 +153,37 @@ class SimpleMonthView extends View {
         MONTH_DAY_LABEL_TEXT_SIZE = typedArray.getDimensionPixelSize(R.styleable.DayPickerView_textSizeDayName, resources.getDimensionPixelSize(R.dimen.text_size_day_name));
         MONTH_HEADER_SIZE = typedArray.getDimensionPixelOffset(R.styleable.DayPickerView_headerMonthHeight, resources.getDimensionPixelOffset(R.dimen.header_month_height));
         DAY_SELECTED_CIRCLE_SIZE = typedArray.getDimensionPixelSize(R.styleable.DayPickerView_selectedDayRadius, resources.getDimensionPixelOffset(R.dimen.selected_day_radius));
+        EVENT_ROW_SIZE = typedArray.getDimensionPixelOffset(R.styleable.DayPickerView_eventRowHeight, resources.getDimensionPixelOffset(R.dimen.event_row_height));
+        EVENT_CIRCLE_RADIUS = typedArray.getDimensionPixelOffset(R.styleable.DayPickerView_eventCircleRadius, resources.getDimensionPixelOffset(R.dimen.event_circle_radius));
+
+        if ((EVENT_CIRCLE_RADIUS * 2) > EVENT_ROW_SIZE) {
+            EVENT_CIRCLE_RADIUS = EVENT_ROW_SIZE / 2 - resources.getDimensionPixelSize(R.dimen.event_circle_padding);
+        }
 
         ENABLE_MONTH_DAY_HEADER = typedArray.getBoolean(R.styleable.DayPickerView_enableMonthDayHeader, true);
 
-        mRowHeight = ((typedArray.getDimensionPixelSize(R.styleable.DayPickerView_calendarHeight, resources.getDimensionPixelOffset(R.dimen.calendar_height)) - MONTH_HEADER_SIZE) / 6);
+        mRowHeight = ((typedArray.getDimensionPixelSize(R.styleable.DayPickerView_calendarHeight, resources.getDimensionPixelOffset(R.dimen.calendar_height)) - MONTH_HEADER_SIZE) / 6 + EVENT_ROW_SIZE);
 
         isPrevDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enablePreviousDay, true);
 
+        eventDatas = new EventData[0];
+
         initView();
 
+    }
+
+    public void setEventDatas(ArrayList<EventData> eventDataArrayList) {
+        eventDatas = new EventData[eventDataArrayList.size()];
+        eventDatas = eventDataArrayList.toArray(eventDatas);
+    }
+
+    private boolean checkHasEvent(int day) {
+        for (EventData item : eventDatas) {
+            if (item.isHasEvent(day, mMonth, mYear)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private int calculateNumRows() {
@@ -210,7 +240,8 @@ class SimpleMonthView extends View {
     }
 
     protected void drawMonthNums(Canvas canvas) {
-        int y = (mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 2 - DAY_SEPARATOR_WIDTH + MONTH_HEADER_SIZE;
+        int y = (mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 2 - EVENT_ROW_SIZE - DAY_SEPARATOR_WIDTH + MONTH_HEADER_SIZE;
+        int eventY = (mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 2 - DAY_SEPARATOR_WIDTH + MONTH_HEADER_SIZE;
         int paddingDay = (mWidth - 2 * mPadding) / (2 * mNumDays);
         int dayOffset = findDayOffset();
         int day = 1;
@@ -275,10 +306,15 @@ class SimpleMonthView extends View {
 
             canvas.drawText(String.format("%d", day), x, y, mMonthNumPaint);
 
+            if (checkHasEvent(day)) {
+                canvas.drawCircle(x, eventY, EVENT_CIRCLE_RADIUS, mEventDotPaint);
+            }
+
             dayOffset++;
             if (dayOffset == mNumDays) {
                 dayOffset = 0;
                 y += mRowHeight;
+                eventY += mRowHeight;
             }
             day++;
         }
@@ -323,6 +359,13 @@ class SimpleMonthView extends View {
         mSelectedCirclePaint.setTextAlign(Align.CENTER);
         mSelectedCirclePaint.setStyle(Style.FILL);
         mSelectedCirclePaint.setAlpha(SELECTED_CIRCLE_ALPHA);
+
+        mEventDotPaint = new Paint();
+        mEventDotPaint.setAntiAlias(true);
+        mEventDotPaint.setColor(mEventColor);
+        mEventDotPaint.setTextAlign(Align.CENTER);
+        mEventDotPaint.setFakeBoldText(true);
+        mEventDotPaint.setStyle(Style.FILL);
 
         mMonthDayLabelPaint = new Paint();
         mMonthDayLabelPaint.setAntiAlias(true);

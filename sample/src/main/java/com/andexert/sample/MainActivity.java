@@ -7,7 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.andexert.calendarlistview.library.DayPickerView;
+import com.andexert.calendarlistview.library.EventData;
 import com.andexert.calendarlistview.library.SimpleMonthAdapter;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends Activity implements com.andexert.calendarlistview.library.DatePickerController {
@@ -21,6 +24,11 @@ public class MainActivity extends Activity implements com.andexert.calendarlistv
 
         dayPickerView = (DayPickerView) findViewById(R.id.pickerView);
         dayPickerView.setController(this);
+        ArrayList<EventData> eventDataArrayList = new ArrayList<>();
+        eventDataArrayList.add(new EventData(true, 27, 6, 2016));
+        eventDataArrayList.add(new EventData(true, 30, 6, 2016));
+        eventDataArrayList.add(new EventData(true, 5, 7, 2016));
+        dayPickerView.setEventDatas(eventDataArrayList);
     }
 
 
@@ -44,14 +52,13 @@ public class MainActivity extends Activity implements com.andexert.calendarlistv
     }
 
     @Override
-    public int getMaxYear()
-    {
-        return 2020;
+    public int getMaxYear() {
+        return 2030;
     }
 
     @Override
     public int getMinYear() {
-        return 1970;
+        return 1990;
     }
 
     @Override
@@ -60,14 +67,12 @@ public class MainActivity extends Activity implements com.andexert.calendarlistv
     }
 
     @Override
-    public void onDayOfMonthSelected(int year, int month, int day)
-    {
+    public void onDayOfMonthSelected(int year, int month, int day) {
         Log.e("Day Selected", day + " / " + month + " / " + year);
     }
 
     @Override
-    public void onDateRangeSelected(SimpleMonthAdapter.SelectedDays<SimpleMonthAdapter.CalendarDay> selectedDays)
-    {
+    public void onDateRangeSelected(SimpleMonthAdapter.SelectedDays<SimpleMonthAdapter.CalendarDay> selectedDays) {
 
         Log.e("Date range selected", selectedDays.getFirst().toString() + " --> " + selectedDays.getLast().toString());
     }

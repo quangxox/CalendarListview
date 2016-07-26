@@ -32,6 +32,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AbsListView;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,8 +46,10 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     private final SelectedDays<CalendarDay> selectedDays;
     private final Integer firstMonth;
     private final Integer lastMonth;
+    private final boolean enableRangeDaySelect;
     private int mMaxYear;
     private int mMinYear;
+    ArrayList<EventData> eventDataArrayList;
 
 
     public SimpleMonthAdapter(Context context, DatePickerController datePickerController, TypedArray typedArray) {
@@ -54,6 +57,7 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
         calendar = Calendar.getInstance();
         firstMonth = typedArray.getInt(R.styleable.DayPickerView_firstMonth, calendar.get(Calendar.MONTH));
         lastMonth = typedArray.getInt(R.styleable.DayPickerView_lastMonth, (calendar.get(Calendar.MONTH) - 1) % MONTHS_IN_YEAR);
+        enableRangeDaySelect = typedArray.getBoolean(R.styleable.DayPickerView_enableRangeDaySelect, true);
         selectedDays = new SelectedDays<>();
         mContext = context;
         mController = datePickerController;
@@ -97,6 +101,10 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
 
         v.reuse();
 
+        if (eventDataArrayList != null && !eventDataArrayList.isEmpty()) {
+            v.setEventDatas(eventDataArrayList);
+        }
+
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_BEGIN_YEAR, selectedFirstYear);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_LAST_YEAR, selectedLastYear);
         drawingParams.put(SimpleMonthView.VIEW_PARAMS_SELECTED_BEGIN_MONTH, selectedFirstMonth);
@@ -125,6 +133,10 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
             itemCount -= (MONTHS_IN_YEAR - lastMonth) - 1;
 
         return itemCount;
+    }
+
+    public void setEventDatas(ArrayList<EventData> eventDataArrayList) {
+        this.eventDataArrayList = eventDataArrayList;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -166,21 +178,24 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     }
 
     public void setSelectedDay(CalendarDay calendarDay) {
-        if (selectedDays.getFirst() != null && selectedDays.getLast() == null) {
+        if (!enableRangeDaySelect) {
             selectedDays.setLast(calendarDay);
+        } else {
+            if (selectedDays.getFirst() != null && selectedDays.getLast() == null) {
+                selectedDays.setLast(calendarDay);
 
-            if (selectedDays.getFirst().month < calendarDay.month) {
-                for (int i = 0; i < selectedDays.getFirst().month - calendarDay.month - 1; ++i)
-                    mController.onDayOfMonthSelected(selectedDays.getFirst().year, selectedDays.getFirst().month + i, selectedDays.getFirst().day);
-            }
+                if (selectedDays.getFirst().month < calendarDay.month) {
+                    for (int i = 0; i < selectedDays.getFirst().month - calendarDay.month - 1; ++i)
+                        mController.onDayOfMonthSelected(selectedDays.getFirst().year, selectedDays.getFirst().month + i, selectedDays.getFirst().day);
+                }
 
-            mController.onDateRangeSelected(selectedDays);
-        } else if (selectedDays.getLast() != null) {
-            selectedDays.setFirst(calendarDay);
-            selectedDays.setLast(null);
-        } else
-            selectedDays.setFirst(calendarDay);
-
+                mController.onDateRangeSelected(selectedDays);
+            } else if (selectedDays.getLast() != null) {
+                selectedDays.setFirst(calendarDay);
+                selectedDays.setLast(null);
+            } else
+                selectedDays.setFirst(calendarDay);
+        }
         notifyDataSetChanged();
     }
 
