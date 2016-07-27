@@ -40,6 +40,8 @@ public class SimpleCalendarHeaderView extends View {
 
     protected int mDayTextColor;
 
+    protected int mHeaderColor;
+
     private TypedArray typedArray;
 
     private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
@@ -76,6 +78,7 @@ public class SimpleCalendarHeaderView extends View {
         mDayOfWeekTypeface = resources.getString(R.string.sans_serif);
 
         mDayTextColor = typedArray.getColor(R.styleable.SimpleCalendarHeaderView_headerColorDayName, resources.getColor(R.color.normal_day));
+        mHeaderColor = typedArray.getColor(R.styleable.SimpleCalendarHeaderView_headerColor, resources.getColor(R.color.header));
 
         MONTH_DAY_LABEL_TEXT_SIZE = typedArray.getDimensionPixelSize(R.styleable.SimpleCalendarHeaderView_headerTextSizeDayName, resources.getDimensionPixelSize(R.dimen.text_size_day_name));
         MONTH_HEADER_SIZE = typedArray.getDimensionPixelOffset(R.styleable.SimpleCalendarHeaderView_headerHeight, resources.getDimensionPixelOffset(R.dimen.header_month_height));
@@ -93,6 +96,7 @@ public class SimpleCalendarHeaderView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        canvas.drawColor(mHeaderColor);
         drawMonthDayLabels(canvas);
     }
 

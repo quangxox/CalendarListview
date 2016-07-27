@@ -54,6 +54,7 @@
 
     <declare-styleable name="SimpleCalendarHeaderView">
         <attr name="headerColorDayName" format="color"/>
+        <attr name="headerColor" format="color"/>
         <attr name="headerTextSizeDayName" format="dimension"/>
         <attr name="headerHeight" format="dimension"/>
     </declare-styleable>

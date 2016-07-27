@@ -8,7 +8,8 @@
     <com.andexert.calendarlistview.library.SimpleCalendarHeaderView
         android:id="@+id/pickerHeaderView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        calendar:headerColor="#ff0000"/>
 
     <com.andexert.calendarlistview.library.DayPickerView
         android:id="@+id/pickerView"
