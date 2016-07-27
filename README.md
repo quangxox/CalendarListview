@@ -24,7 +24,7 @@ Add the dependency
 ``` xml
 
 dependencies {
-    compile 'com.github.quangxox:CalendarListview:v1.2.5'
+    compile 'com.github.quangxox:CalendarListview:v1.2.6'
 }
 
 ```
