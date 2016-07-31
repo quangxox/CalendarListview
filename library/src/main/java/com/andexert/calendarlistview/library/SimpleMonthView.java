@@ -24,6 +24,7 @@
 package com.andexert.calendarlistview.library;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
@@ -83,6 +84,7 @@ class SimpleMonthView extends View {
     protected Paint mSelectedCirclePaint;
     protected Paint mEventDotPaint;
     protected int mCurrentDayTextColor;
+    protected int mCurrentMonthTextColor;
     protected int mMonthTextColor;
     protected int mDayTextColor;
     protected int mDayNumColor;
@@ -117,6 +119,12 @@ class SimpleMonthView extends View {
     private final Calendar mDayLabelCalendar;
     private final Boolean isPrevDayEnabled;
 
+    private String textDayFontPath;
+    private String textMonthFontPath;
+    private String textDayNameFontPath;
+
+    private boolean displayShotMonthLabel;
+
     private EventData[] eventDatas;
 
     private int mNumRows = DEFAULT_NUM_ROWS;
@@ -136,6 +144,7 @@ class SimpleMonthView extends View {
         mDayOfWeekTypeface = resources.getString(R.string.sans_serif);
         mMonthTitleTypeface = resources.getString(R.string.sans_serif);
         mCurrentDayTextColor = typedArray.getColor(R.styleable.DayPickerView_colorCurrentDay, resources.getColor(R.color.normal_day));
+        mCurrentMonthTextColor = typedArray.getColor(R.styleable.DayPickerView_colorCurrentMonth, resources.getColor(R.color.normal_day));
         mMonthTextColor = typedArray.getColor(R.styleable.DayPickerView_colorMonthName, resources.getColor(R.color.normal_day));
         mDayTextColor = typedArray.getColor(R.styleable.DayPickerView_colorDayName, resources.getColor(R.color.normal_day));
         mDayNumColor = typedArray.getColor(R.styleable.DayPickerView_colorNormalDay, resources.getColor(R.color.normal_day));
@@ -166,9 +175,15 @@ class SimpleMonthView extends View {
 
         isPrevDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enablePreviousDay, true);
 
+        displayShotMonthLabel = typedArray.getBoolean(R.styleable.DayPickerView_displayShortMonthLabel, false);
+
+        textDayFontPath = typedArray.getString(R.styleable.DayPickerView_textDayFontPath);
+        textMonthFontPath = typedArray.getString(R.styleable.DayPickerView_textMonthFontPath);
+        textDayNameFontPath = typedArray.getString(R.styleable.DayPickerView_textDayNameFontPath);
+
         eventDatas = new EventData[0];
 
-        initView();
+        initView(context);
 
     }
 
@@ -208,8 +223,18 @@ class SimpleMonthView extends View {
     private void drawMonthTitle(Canvas canvas) {
         int x = (mWidth + 2 * mPadding) / 2;
         int y = (MONTH_HEADER_SIZE - MONTH_DAY_LABEL_TEXT_SIZE) / 2 + (MONTH_LABEL_TEXT_SIZE / 3);
-        StringBuilder stringBuilder = new StringBuilder(getMonthAndYearString().toLowerCase());
-        stringBuilder.setCharAt(0, Character.toUpperCase(stringBuilder.charAt(0)));
+        StringBuilder stringBuilder;
+        if (displayShotMonthLabel) {
+            stringBuilder = new StringBuilder(getMonthAndYearShortString().toUpperCase());
+        } else {
+            stringBuilder = new StringBuilder(getMonthAndYearString().toLowerCase());
+            stringBuilder.setCharAt(0, Character.toUpperCase(stringBuilder.charAt(0)));
+        }
+        if (mMonth == today.month && mYear == today.year) {
+            mMonthTitlePaint.setColor(mCurrentMonthTextColor);
+        } else {
+            mMonthTitlePaint.setColor(mMonthTextColor);
+        }
         canvas.drawText(stringBuilder.toString(), x, y, mMonthTitlePaint);
     }
 
@@ -222,7 +247,16 @@ class SimpleMonthView extends View {
         int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY;
         mStringBuilder.setLength(0);
         long millis = mCalendar.getTimeInMillis();
-        return DateUtils.formatDateRange(getContext(), millis, millis, flags);
+        String monthLabel = DateUtils.formatDateRange(getContext(), millis, millis, flags);
+        return monthLabel;
+    }
+
+    private String getMonthAndYearShortString() {
+        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_ABBREV_MONTH;
+        mStringBuilder.setLength(0);
+        long millis = mCalendar.getTimeInMillis();
+        String monthLabel = DateUtils.formatDateRange(getContext(), millis, millis, flags);
+        return monthLabel;
     }
 
     private void onDayClick(SimpleMonthAdapter.CalendarDay calendarDay) {
@@ -335,15 +369,21 @@ class SimpleMonthView extends View {
         return new SimpleMonthAdapter.CalendarDay(mYear, mMonth, day);
     }
 
-    protected void initView() {
+    protected void initView(Context context) {
+        AssetManager assetManager = context.getAssets();
         mMonthTitlePaint = new Paint();
         mMonthTitlePaint.setFakeBoldText(true);
         mMonthTitlePaint.setAntiAlias(true);
         mMonthTitlePaint.setTextSize(MONTH_LABEL_TEXT_SIZE);
-        mMonthTitlePaint.setTypeface(Typeface.create(mMonthTitleTypeface, Typeface.BOLD));
         mMonthTitlePaint.setColor(mMonthTextColor);
         mMonthTitlePaint.setTextAlign(Align.CENTER);
         mMonthTitlePaint.setStyle(Style.FILL);
+        if (textMonthFontPath != null) {
+            Typeface plain = Typeface.createFromAsset(assetManager, textMonthFontPath);
+            mMonthTitlePaint.setTypeface(plain);
+        } else {
+            mMonthTitlePaint.setTypeface(Typeface.create(mMonthTitleTypeface, Typeface.BOLD));
+        }
 
         mMonthTitleBGPaint = new Paint();
         mMonthTitleBGPaint.setFakeBoldText(true);
@@ -371,10 +411,15 @@ class SimpleMonthView extends View {
         mMonthDayLabelPaint.setAntiAlias(true);
         mMonthDayLabelPaint.setTextSize(MONTH_DAY_LABEL_TEXT_SIZE);
         mMonthDayLabelPaint.setColor(mDayTextColor);
-        mMonthDayLabelPaint.setTypeface(Typeface.create(mDayOfWeekTypeface, Typeface.NORMAL));
         mMonthDayLabelPaint.setStyle(Style.FILL);
         mMonthDayLabelPaint.setTextAlign(Align.CENTER);
         mMonthDayLabelPaint.setFakeBoldText(true);
+        if (textDayNameFontPath != null) {
+            Typeface plain = Typeface.createFromAsset(assetManager, textDayNameFontPath);
+            mMonthDayLabelPaint.setTypeface(plain);
+        } else {
+            mMonthDayLabelPaint.setTypeface(Typeface.create(mDayOfWeekTypeface, Typeface.NORMAL));
+        }
 
         mMonthNumPaint = new Paint();
         mMonthNumPaint.setAntiAlias(true);
@@ -382,6 +427,10 @@ class SimpleMonthView extends View {
         mMonthNumPaint.setStyle(Style.FILL);
         mMonthNumPaint.setTextAlign(Align.CENTER);
         mMonthNumPaint.setFakeBoldText(false);
+        if (textDayFontPath != null) {
+            Typeface plain = Typeface.createFromAsset(assetManager, textDayFontPath);
+            mMonthNumPaint.setTypeface(plain);
+        }
     }
 
     protected void onDraw(Canvas canvas) {

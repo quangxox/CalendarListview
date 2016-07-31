@@ -16,8 +16,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/pickerHeaderView"
+        calendar:colorCurrentMonth="#ff0000"
         calendar:currentDaySelected="true"
+        calendar:displayShortMonthLabel="true"
         calendar:enableMonthDayHeader="false"
-        calendar:enableRangeDaySelect="false"/>
+        calendar:enableRangeDaySelect="false"
+        calendar:textMonthFontPath="Roboto-Light.ttf"/>
 
 </RelativeLayout>

@@ -2,6 +2,7 @@
 <resources>
     <declare-styleable name="DayPickerView">
         <attr name="colorCurrentDay" format="color"/>
+        <attr name="colorCurrentMonth" format="color"/>
         <attr name="colorSelectedDayBackground" format="color"/>
         <attr name="colorSelectedDayText" format="color"/>
         <attr name="colorPreviousDay" format="color"/>
@@ -10,8 +11,11 @@
         <attr name="colorDayName" format="color"/>
         <attr name="colorEvent" format="color"/>
         <attr name="textSizeDay" format="dimension"/>
+        <attr name="textDayFontPath" format="string"/>
         <attr name="textSizeMonth" format="dimension"/>
+        <attr name="textMonthFontPath" format="string"/>
         <attr name="textSizeDayName" format="dimension"/>
+        <attr name="textDayNameFontPath" format="string"/>
         <attr name="headerMonthHeight" format="dimension"/>
         <attr name="eventRowHeight" format="dimension"/>
         <attr name="eventCircleRadius" format="dimension"/>
@@ -22,6 +26,7 @@
         <attr name="drawRoundRect" format="boolean"/>
         <attr name="enableMonthDayHeader" format="boolean"/>
         <attr name="enableRangeDaySelect" format="boolean"/>
+        <attr name="displayShortMonthLabel" format="boolean"/>
         <attr name="firstMonth" format="enum">
             <enum name="january" value="0"/>
             <enum name="february" value="1"/>
@@ -57,5 +62,6 @@
         <attr name="headerColor" format="color"/>
         <attr name="headerTextSizeDayName" format="dimension"/>
         <attr name="headerHeight" format="dimension"/>
+        <attr name="displayOneLetter" format="boolean"/>
     </declare-styleable>
 </resources>

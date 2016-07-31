@@ -42,6 +42,8 @@ public class SimpleCalendarHeaderView extends View {
 
     protected int mHeaderColor;
 
+    private boolean isDisplayOneLetter = false;
+
     private TypedArray typedArray;
 
     private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
@@ -83,6 +85,8 @@ public class SimpleCalendarHeaderView extends View {
         MONTH_DAY_LABEL_TEXT_SIZE = typedArray.getDimensionPixelSize(R.styleable.SimpleCalendarHeaderView_headerTextSizeDayName, resources.getDimensionPixelSize(R.dimen.text_size_day_name));
         MONTH_HEADER_SIZE = typedArray.getDimensionPixelOffset(R.styleable.SimpleCalendarHeaderView_headerHeight, resources.getDimensionPixelOffset(R.dimen.header_month_height));
 
+        isDisplayOneLetter = typedArray.getBoolean(R.styleable.SimpleCalendarHeaderView_displayOneLetter, false);
+
         mMonthDayLabelPaint = new Paint();
         mMonthDayLabelPaint.setAntiAlias(true);
         mMonthDayLabelPaint.setTextSize(MONTH_DAY_LABEL_TEXT_SIZE);
@@ -120,7 +124,11 @@ public class SimpleCalendarHeaderView extends View {
             int calendarDay = (i + mWeekStart) % mNumDays;
             int x = (2 * i + 1) * dayWidthHalf + mPadding;
             mDayLabelCalendar.set(Calendar.DAY_OF_WEEK, calendarDay);
-            canvas.drawText(mDateFormatSymbols.getShortWeekdays()[mDayLabelCalendar.get(Calendar.DAY_OF_WEEK)].toUpperCase(Locale.getDefault()), x, y, mMonthDayLabelPaint);
+            String weekdaysLabel = mDateFormatSymbols.getShortWeekdays()[mDayLabelCalendar.get(Calendar.DAY_OF_WEEK)].toUpperCase(Locale.getDefault());
+            if (isDisplayOneLetter) {
+                weekdaysLabel = weekdaysLabel.substring(0, 1);
+            }
+            canvas.drawText(weekdaysLabel, x, y, mMonthDayLabelPaint);
         }
     }
 
