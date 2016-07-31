@@ -44,6 +44,8 @@ public class SimpleCalendarHeaderView extends View {
 
     private boolean isDisplayOneLetter = false;
 
+    private boolean forceEnglish;
+
     private TypedArray typedArray;
 
     private DateFormatSymbols mDateFormatSymbols = new DateFormatSymbols();
@@ -86,6 +88,12 @@ public class SimpleCalendarHeaderView extends View {
         MONTH_HEADER_SIZE = typedArray.getDimensionPixelOffset(R.styleable.SimpleCalendarHeaderView_headerHeight, resources.getDimensionPixelOffset(R.dimen.header_month_height));
 
         isDisplayOneLetter = typedArray.getBoolean(R.styleable.SimpleCalendarHeaderView_displayOneLetter, false);
+
+        forceEnglish = typedArray.getBoolean(R.styleable.SimpleCalendarHeaderView_forceHeaderEnglish, false);
+
+        if (forceEnglish) {
+            mDateFormatSymbols = new DateFormatSymbols(Locale.ENGLISH);
+        }
 
         mMonthDayLabelPaint = new Paint();
         mMonthDayLabelPaint.setAntiAlias(true);

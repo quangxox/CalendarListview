@@ -124,6 +124,7 @@ class SimpleMonthView extends View {
     private String textDayNameFontPath;
 
     private boolean displayShotMonthLabel;
+    private boolean forceEnglish;
 
     private EventData[] eventDatas;
 
@@ -176,10 +177,21 @@ class SimpleMonthView extends View {
         isPrevDayEnabled = typedArray.getBoolean(R.styleable.DayPickerView_enablePreviousDay, true);
 
         displayShotMonthLabel = typedArray.getBoolean(R.styleable.DayPickerView_displayShortMonthLabel, false);
+        forceEnglish = typedArray.getBoolean(R.styleable.DayPickerView_forceEnglish, false);
 
-        textDayFontPath = typedArray.getString(R.styleable.DayPickerView_textDayFontPath);
-        textMonthFontPath = typedArray.getString(R.styleable.DayPickerView_textMonthFontPath);
-        textDayNameFontPath = typedArray.getString(R.styleable.DayPickerView_textDayNameFontPath);
+        if (forceEnglish) {
+            mDateFormatSymbols = new DateFormatSymbols(Locale.ENGLISH);
+        }
+
+        if (typedArray.hasValue(R.styleable.DayPickerView_textDayFontPath)) {
+            textDayFontPath = typedArray.getString(R.styleable.DayPickerView_textDayFontPath);
+        }
+        if (typedArray.hasValue(R.styleable.DayPickerView_textMonthFontPath)) {
+            textMonthFontPath = typedArray.getString(R.styleable.DayPickerView_textMonthFontPath);
+        }
+        if (typedArray.hasValue(R.styleable.DayPickerView_textDayNameFontPath)) {
+            textDayNameFontPath = typedArray.getString(R.styleable.DayPickerView_textDayNameFontPath);
+        }
 
         eventDatas = new EventData[0];
 
@@ -252,11 +264,12 @@ class SimpleMonthView extends View {
     }
 
     private String getMonthAndYearShortString() {
-        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_ABBREV_MONTH;
-        mStringBuilder.setLength(0);
-        long millis = mCalendar.getTimeInMillis();
-        String monthLabel = DateUtils.formatDateRange(getContext(), millis, millis, flags);
-        return monthLabel;
+        return mDateFormatSymbols.getShortMonths()[mCalendar.get(Calendar.MONTH)].toUpperCase() + " " + mCalendar.get(Calendar.YEAR);
+//        int flags = DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY | DateUtils.FORMAT_ABBREV_MONTH;
+//        mStringBuilder.setLength(0);
+//        long millis = mCalendar.getTimeInMillis();
+//        String monthLabel = DateUtils.formatDateRange(getContext(), millis, millis, flags);
+//        return monthLabel;
     }
 
     private void onDayClick(SimpleMonthAdapter.CalendarDay calendarDay) {

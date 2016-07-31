@@ -27,6 +27,7 @@
         <attr name="enableMonthDayHeader" format="boolean"/>
         <attr name="enableRangeDaySelect" format="boolean"/>
         <attr name="displayShortMonthLabel" format="boolean"/>
+        <attr name="forceEnglish" format="boolean"/>
         <attr name="firstMonth" format="enum">
             <enum name="january" value="0"/>
             <enum name="february" value="1"/>
@@ -63,5 +64,6 @@
         <attr name="headerTextSizeDayName" format="dimension"/>
         <attr name="headerHeight" format="dimension"/>
         <attr name="displayOneLetter" format="boolean"/>
+        <attr name="forceHeaderEnglish" format="boolean"/>
     </declare-styleable>
 </resources>
