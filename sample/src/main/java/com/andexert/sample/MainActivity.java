@@ -29,6 +29,7 @@ public class MainActivity extends Activity implements com.andexert.calendarlistv
         eventDataArrayList.add(new EventData(true, 30, 6, 2016));
         eventDataArrayList.add(new EventData(true, 5, 7, 2016));
         dayPickerView.setEventDatas(eventDataArrayList);
+        dayPickerView.setSelectedDay(new SimpleMonthAdapter.CalendarDay(2016, 7, 5));
     }
 
 

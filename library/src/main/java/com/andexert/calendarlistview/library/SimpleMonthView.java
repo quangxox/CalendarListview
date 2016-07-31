@@ -184,13 +184,25 @@ class SimpleMonthView extends View {
         }
 
         if (typedArray.hasValue(R.styleable.DayPickerView_textDayFontPath)) {
-            textDayFontPath = typedArray.getString(R.styleable.DayPickerView_textDayFontPath);
+            try {
+                textDayFontPath = typedArray.getString(R.styleable.DayPickerView_textDayFontPath);
+            } catch (Exception ignored) {
+
+            }
         }
         if (typedArray.hasValue(R.styleable.DayPickerView_textMonthFontPath)) {
-            textMonthFontPath = typedArray.getString(R.styleable.DayPickerView_textMonthFontPath);
+            try {
+                textMonthFontPath = typedArray.getString(R.styleable.DayPickerView_textMonthFontPath);
+            } catch (Exception ignored) {
+
+            }
         }
         if (typedArray.hasValue(R.styleable.DayPickerView_textDayNameFontPath)) {
-            textDayNameFontPath = typedArray.getString(R.styleable.DayPickerView_textDayNameFontPath);
+            try {
+                textDayNameFontPath = typedArray.getString(R.styleable.DayPickerView_textDayNameFontPath);
+            } catch (Exception ignored) {
+
+            }
         }
 
         eventDatas = new EventData[0];

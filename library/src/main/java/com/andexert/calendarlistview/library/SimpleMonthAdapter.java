@@ -174,8 +174,8 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
     }
 
     protected void onDayTapped(CalendarDay calendarDay) {
-        setSelectedDay(calendarDay);
         mController.onDayOfMonthSelected(calendarDay.year, calendarDay.month, calendarDay.day);
+        setSelectedDay(calendarDay);
     }
 
     public void setSelectedDay(CalendarDay calendarDay) {
@@ -277,6 +277,10 @@ public class SimpleMonthAdapter extends RecyclerView.Adapter<SimpleMonthAdapter.
 
     public SelectedDays<CalendarDay> getSelectedDays() {
         return selectedDays;
+    }
+
+    public void setSelectedDays(CalendarDay selectedDay) {
+        setSelectedDay(selectedDay);
     }
 
     public static class SelectedDays<K> implements Serializable {

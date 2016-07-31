@@ -127,6 +127,10 @@ public class DayPickerView extends RecyclerView {
         return mAdapter.getSelectedDays();
     }
 
+    public void setSelectedDay(SimpleMonthAdapter.CalendarDay selectedDay) {
+        mAdapter.setSelectedDay(selectedDay);
+    }
+
     protected DatePickerController getController() {
         return mController;
     }
